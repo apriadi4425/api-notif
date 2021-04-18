@@ -1,8 +1,16 @@
 {
+  "sipp": {
+    "username": "apri",
+    "password": "selamanya48",
+    "database": "sipp3",
+    "host": "36.92.93.61",
+    "port" : "3308",
+    "dialect": "mariadb"
+  },
   "development": {
     "username": "apri",
     "password": "selamanya48",
-    "database": "sipp2",
+    "database": "sipp3",
     "host": "36.92.93.61",
     "port" : "3308",
     "dialect": "mariadb"
