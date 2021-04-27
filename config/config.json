@@ -4,7 +4,7 @@
     "password": "selamanya48",
     "database": "sipp2",
     "host": "192.168.2.44",
-    "port" : "sipp2",
+    "port" : "3306",
     "dialect": "mariadb"
   },
   "development": {
