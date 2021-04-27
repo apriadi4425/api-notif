@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     nomor_perkara: DataTypes.STRING,
+    jenis_perkara_nama : DataTypes.STRING,
     pihak1_text: DataTypes.STRING,
     pihak2_text: DataTypes.STRING
   }, {
