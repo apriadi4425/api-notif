@@ -5,7 +5,8 @@
     "database": "sipp2",
     "host": "192.168.2.44",
     "port" : "3306",
-    "dialect": "mariadb"
+    "dialect": "mariadb",
+    "logging" : false
   },
   "development": {
     "username": "apri",

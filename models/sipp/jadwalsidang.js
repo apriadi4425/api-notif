@@ -11,14 +11,18 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             JadwalSidang.belongsTo(models.Perkara, {as : 'perkara', foreignKey : 'perkara_id'});
+            // JadwalSidang.belongsToMany(models.PelaksanaanRelaas, {as : 'relaas', foreignKey : 'sidang_id'});
+            JadwalSidang.hasMany(models.PelaksanaanRelaas, {as : 'relaas', foreignKey : 'sidang_id'})
         }
     };
     JadwalSidang.init({
         perkara_id: {
             type : DataTypes.INTEGER,
-            references: { model: 'perkara', key: 'perkara_id' }
+            references: { model: 'Perkara', key: 'perkara_id' }
         },
-        tanggal_sidang : DataTypes.DATEONLY
+        tanggal_sidang : DataTypes.DATEONLY,
+        agenda : DataTypes.STRING,
+        urutan : DataTypes.INTEGER
     }, {
         sequelize,
         modelName: 'JadwalSidang',
