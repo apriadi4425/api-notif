@@ -1,6 +1,4 @@
-const models = require('../models/sipp')
-const moment = require('moment');
-const { Op } = require('sequelize');
+const PerkaraService = require('../service/PerkaraService')
 
 const GetDataPihak = item => {
     let pihak = []
@@ -34,28 +32,12 @@ const GetDataPihak = item => {
 
 exports.GetData = (req, res) => {
     const {tgl_sidang, user} = req.query
-    let where = {
-        tanggal_sidang : tgl_sidang
-    }
-
-    models.JadwalSidang.findAll({
-        include : [
-            {
-                association : 'perkara',
-                include : ['panitera', 'jurusita'],
-                order : ['id','desc']
-            },
-            {
-                association : 'relaas',
-                include : ['pihak']
-            },
-        ],
-        where
-    })
+    PerkaraService.getJadwalsidang(tgl_sidang)
         .then(result => {
-            const NewData = user ? result.filter(item => item.perkara.panitera.panitera_nama === user)
-                                         .map(GetDataPihak) 
-                                         : result.map(GetDataPihak)
+            const NewData = user ? 
+                result.filter(item => item.perkara.panitera.panitera_nama === user)
+                    .map(GetDataPihak) 
+                : result.map(GetDataPihak)
             res.json(NewData)
         })
 }

@@ -1,21 +1,8 @@
-const models = require('../models/sipp')
-const {Op} = require('sequelize')
-
-
-const GetDataPerkara = (like) => {
-    return models.Perkara.count({where : { 
-        tanggal_pendaftaran : {
-            [Op.like] : '%2021%'
-        },
-        nomor_perkara : {
-            [Op.like] : like
-        }
-    }})
-}
+const PerkaraService = require('../service/PerkaraService')
 
 exports.getJumlahData = async (req, res) => {
-    const JumlahPerkaraGugatan = await GetDataPerkara('%Pdt.G%')
-    const JumlahPerkaraPermohonan = await GetDataPerkara('%Pdt.P%')
+    const JumlahPerkaraGugatan = await PerkaraService.getDataPerkara('%Pdt.G%')
+    const JumlahPerkaraPermohonan = await PerkaraService.getDataPerkara('%Pdt.P%')
 
      res.json({
          gugatan : JumlahPerkaraGugatan,
