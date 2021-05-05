@@ -8,7 +8,7 @@
     "dialect": "mariadb",
     "logging" : false
   },
-  "development": {
+  "nisa": {
     "username": "apri",
     "password": "selamanya48",
     "database": "notif_nisa",
