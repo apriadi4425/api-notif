@@ -1,7 +1,17 @@
 const userService = require('../service/userService')
 
-exports.signUp = async (req, res) => {
-    await userService.createUser(req.body)
+exports.signIn = (req, res) => {
+    const { username, password } = req.body
+    userService.userValidate({ username, password })
+        .then(result => {
+            res.send(result)
+        }).catch(err => {
+            res.status(401).send(err)
+        })
+}
+
+exports.signUp = (req, res) => {
+    userService.createUser(req.body)
         .then(() => {
             res.send({
                 status : 'sukses',
