@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     kode: DataTypes.STRING,
     nip: DataTypes.STRING,
-    nama_gelar: DataTypes.STRING
+    nama_gelar: DataTypes.STRING,
+    aktif : DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'HakimPn',
