@@ -3,8 +3,8 @@
     "username": "apri",
     "password": "selamanya48",
     "database": "sipp2",
-    "host": "192.168.2.44",
-    "port" : "3306",
+    "host": "36.92.93.61",
+    "port" : "3308",
     "dialect": "mariadb",
     "logging" : false
   },
@@ -14,7 +14,8 @@
     "database": "notif_nisa",
     "host": "36.92.93.61",
     "port" : "3308",
-    "dialect": "mariadb"
+    "dialect": "mariadb",
+    "logging" : false
   },
   "test": {
     "username": "root",
