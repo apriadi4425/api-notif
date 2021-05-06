@@ -1,11 +1,9 @@
 const router = require('express').Router()
+const glob = require('glob')
 
-const jadwal = require('./jadwal')
-const perkara = require('./perkara')
-const user = require('./user')
-
-router.use('/user', user)
-router.use('/jadwal-sidang', jadwal)
-router.use('/perkara', perkara)
+glob.sync(`./routes/*.js`).forEach(async routeFile => {
+    const FileReplace = routeFile.replace('./routes/', '').replace('.js', '')
+    if(FileReplace !== 'index') router.use(`/${FileReplace}`, require(`./${FileReplace}`))
+})
 
 module.exports = router

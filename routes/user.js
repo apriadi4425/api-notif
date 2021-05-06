@@ -1,9 +1,18 @@
+
 const router = require('express').Router()
+const path = require('path');
+const scriptName = path.basename(__filename).replace('.js', '');
 
-const UserController = require('../controllers/UserController')
+const Controller = require(`../controllers/${scriptName}`)()
 
-router.post('/', UserController.signUp)
-router.post('/signin', UserController.signIn)
-router.get('/sipp', UserController.getSippUsers)
+router.route('/')
+    .post(Controller.signUp)
+
+router.route('/signin')
+    .post(Controller.signIn)
+
+router.route('/sipp')
+    .get(Controller.getSippUsers)
+    
 
 module.exports = router
