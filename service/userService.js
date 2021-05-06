@@ -14,6 +14,7 @@ exports.userValidate = ({username, password}) => {
             const data = {
                 id : checkUser.id,
                 userId : checkUser.user_id,
+                sipp_userid : checkUser.sipp_userid,
                 name : checkUser.name,
                 otoritas : checkUser.otoritas,
                 table_reference : checkUser.table_reference,
@@ -27,20 +28,51 @@ exports.userValidate = ({username, password}) => {
             }
             reject(data)
         }
+    })
+}
 
+exports.getUser = (id) => {
+    return new Promise((resolve, reject) => {
+        ModelNissa.User.findOne({where : { id }}).then((res) => {
+            resolve(res)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+exports.updateToken = (id, token_notif) => {
+    return new Promise(resolve => {
+        ModelNissa.User.update({ token_notif }, {where : { id }}).then(() => {
+            resolve('sukses')
+        }).reject(err => {
+            reject(err)
+        })
     })
 }
 
 exports.create = (body) => {
     return new Promise((resolve, reject) => {
-        const { name, username, password, otoritas, table_reference, user_id, token_notif } = body
-        ModelNissa.User.create({name, username, otoritas, table_reference, user_id, token_notif, password : md5(password)})
+        const { name, username, password, otoritas, table_reference, user_id, sipp_userid, token_notif } = body
+        ModelNissa.User.create({name, username, otoritas, table_reference, user_id, sipp_userid, token_notif, password : md5(password)})
             .then(() => {
                resolve('sukses')
             })
             .catch(err => {
                reject(err)
             })
+    })
+}
+
+exports.getUserSippById = async (userid) => {
+    return new Promise(async (resove, reject) => {
+        const User = await ModelSipp.sequelize.query(`
+            select a.userid, a.fullname, a.username, a.email, c.name from sys_users a 
+            left join sys_user_group b on a.userid = b.userid
+            left join sys_groups c on b.groupid = c.groupid
+            where a.userid = ${userid}
+        `)
+        resove( JSON.stringify(User[0], null, 2))
     })
 }
 

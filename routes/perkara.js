@@ -7,6 +7,12 @@ const Controller = require(`../controllers/${scriptName}`)()
 
 router.route('/')
     .get(Controller.getJumlahData)
+
+router.route('/get-chart')
+    .get(Controller.getJumlahPerkaraTiapBulan)
+
+router.route('/status-sidang')
+    .get(Controller.getStatusSidang)
     
 
 module.exports = router

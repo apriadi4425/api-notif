@@ -1,6 +1,54 @@
 const userService = require('../../service/userService')
+const perkaraService = require('../../service/perkaraService')
 
 const Controller = () => {
+
+    const getMyUser = (req, res) => {
+        userService.getUser(req.user.id).then(async result => {
+            const jumlahTotalPerkara = await perkaraService.getDataPerkaraById(result.table_reference, result.otoritas, req.user.userId);
+            res.send({
+                id : result.id,
+                username : result.username,
+                userid : result.user_id,
+                sipp_userid : result.sipp_userid,
+                name : result.name,
+                otoritas : result.otoritas,
+                table : result.table_reference,
+                perkara : JSON.parse(jumlahTotalPerkara)[0]
+            })
+        }).catch(err => {
+            res.send({
+                message: err,
+                status: 500
+            }).status(500)
+        })
+
+    }
+
+    const getUserSippByid = (req, res) => {
+        const { id } = req.params
+        userService.getUserSippById(id).then(result => {
+            res.send(JSON.parse(result)[0])
+        }).catch(err => {
+            res.status(500).send(err)
+        })
+    }
+
+    const updateTokenNotif = (req, res) => {
+        const { token } = req.body
+        const { id } = req.user
+
+        userService.updateToken(id, token).then(result => {
+            res.send({
+                message : 'sukses',
+            })
+        }).catch(err => {
+            res.send({
+                message : err,
+                status : 500
+            }).status(500)
+        })
+    }
     
     const signIn = (req, res) => {
         const { username, password } = req.body
@@ -13,7 +61,7 @@ const Controller = () => {
     }
     
     const signUp = (req, res) => {
-        userService.createUser(req.body)
+        userService.create(req.body)
             .then(() => {
                 res.send({
                     status : 'sukses',
@@ -45,6 +93,7 @@ const Controller = () => {
             }
         }
         dataUser.forEach(user => {
+            console.log(user)
             let newData;
                 if(user.uhakim !== null){
                     newData = ReduceParameter(user.uhakim.hakimpn, 'hakim', 'hakim_pn')
@@ -67,14 +116,14 @@ const Controller = () => {
         const sendData = newDataUser.filter(item => item.newData.jabatan === jabatan && item.newData.aktif === 'Y')
     
         sendData.forEach(user => {
-            const body = {name : user.newData.detil.nama, username : user.newData.detil.nip, password : '123456', otoritas : user.newData.jabatan, table_reference : user.newData.detil.table, user_id : user.newData.detil.id, token_notif : ''}
+            const body = {name : user.newData.detil.nama, username : user.newData.detil.nip, password : '123456', otoritas : user.newData.jabatan, table_reference : user.newData.detil.table, user_id : user.newData.detil.id, sipp_userid : user.userid, token_notif : ''}
             userService.create(body)
         })
         res.json(sendData)
     }
 
 
-    return { signIn, signUp, getSippUsers }
+    return { getMyUser, getUserSippByid,  signIn, signUp, getSippUsers, updateTokenNotif }
 }
 
 module.exports = Controller

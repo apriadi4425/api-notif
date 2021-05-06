@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     otoritas: DataTypes.STRING,
     table_reference: DataTypes.STRING,
     user_id: DataTypes.INTEGER,
+    sipp_userid: DataTypes.INTEGER,
     token_notif: DataTypes.STRING,
   }, {
     sequelize,
