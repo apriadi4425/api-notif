@@ -1,12 +1,26 @@
+const notifService = require('../../service/notifService')
+
 
 const Controller = () => {
-    const getNotif = (req, res) => {
+
+    const pushNotif = async (req, res) => {
+        await notifService.notifikasi()
+        res.json({tes : 'hai'})
+    }
+
+    const getNotif = async (req, res) => {
+        const notif = await notifService.getPenerimaNotifbyId(req.user.id)
+        res.send(notif)
+    }
+
+    const readNotif = async (req, res) => {
+        await notifService.changeUnreadNotif(req.user.id)
         res.json({
-            tes : 'tes'
+            message : 'sukses'
         })
     }
 
-    return { getNotif }
+    return { getNotif, pushNotif, readNotif }
 }
 
 module.exports = Controller

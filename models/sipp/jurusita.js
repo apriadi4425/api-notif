@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true
     },
-    jurusita_nama: DataTypes.STRING
+    jurusita_nama: DataTypes.STRING,
+    jurusita_id: DataTypes.INTEGER,
+
   }, {
     sequelize,
     modelName: 'Jurusita',

@@ -122,7 +122,8 @@ exports.refactoryDataPihak = item => {
         pihak[0] = `${P}: ${item.perkara.pihak1_text}`; 
         pihak[1] = `${T}: ${item.perkara.pihak2_text}`; 
        }
-       if(item.perkara.jenis_perkara_nama === 'Kewarisan'){
+
+       if(item.perkara.jenis_perkara_nama === 'Kewarisan' || item.perkara.jenis_perkara_nama === 'Pengesahan Perkawinan/Istbat Nikah'){
         const Pihak1 = item.perkara.pihak1_text.split('<br />').map((pihak, index) => (`Pemohon ${index + 1} : ${pihak.replace(/[0-9]/, '')}`))
         const Pihak2 = item.perkara.pihak2_text.split('<br />').map((pihak, index) => (`Termohon ${index + 1} : ${pihak.replace(/[0-9]/, '')}`))
 
