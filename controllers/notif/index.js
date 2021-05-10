@@ -5,7 +5,7 @@ const Controller = () => {
 
     const pushNotif = async (req, res) => {
         await notifService.notifikasi()
-        res.json({tes : 'hai'})
+        res.json({message : 'sukses'})
     }
 
     const getNotif = async (req, res) => {
