@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
   PenerimaNotif.init({
     id : {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true,
       },
     tanggal: DataTypes.DATEONLY,
     notif_id: DataTypes.INTEGER,

@@ -90,8 +90,9 @@ exports.getDataPerkaraTiapBulan = () => {
 exports.statusSidang = () => {
     return new Promise((resolve, reject) => {
         ModelSipp.sequelize.query(`
-                SELECT t.perkara_id, t.nomor_perkara, t.proses_terakhir_text, l1.tanggal_sidang, perkara_penetapan.panitera_pengganti_text,z.kode
-                FROM perkara t
+                SELECT t.perkara_id, t.nomor_perkara, t.proses_terakhir_text, t.majelis_hakim_id, z.id as panitera_pengganti_id,
+                l1.tanggal_sidang, perkara_penetapan.panitera_pengganti_text,z.kode
+                FROM v_perkara t
                 LEFT JOIN perkara_penetapan  ON t.perkara_id = perkara_penetapan.perkara_id
                 LEFT JOIN panitera_pn z ON perkara_penetapan.panitera_pengganti_id = z.id  
                 LEFT JOIN perkara_jadwal_sidang l1  ON t.perkara_id = l1.perkara_id

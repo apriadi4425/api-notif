@@ -97,3 +97,9 @@ exports.getAllUserSipp = async () => {
         resove(User)
     })
 }
+
+exports.getTokenNotif = (user_id) => {
+    return new Promise(resolve => {
+        ModelNissa.User.findOne({where : { user_id }}).then(res => resolve(res))
+    })
+}

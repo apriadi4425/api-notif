@@ -1,4 +1,5 @@
 const PerkaraService = require('../../service/perkaraService')
+const notifService = require('../../service/notifService')
 
 const Controller = () => {
 
@@ -13,8 +14,12 @@ const Controller = () => {
     }
 
     const getStatusSidang = async (req, res) => {
-        const Data = await PerkaraService.statusSidang()
-        const dataStatusSidang = JSON.parse(Data)
+        const data = await PerkaraService.statusSidang()
+        const dataStatusSidang = JSON.parse(data)
+
+        for(const perkara of dataStatusSidang){
+            await notifService.inputNotif(perkara)
+        }
         res.send(dataStatusSidang)
     }
 

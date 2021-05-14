@@ -1,9 +1,10 @@
 const ModelNisa = require('../models/nisa')
 const ModelSipp = require('../models/sipp')
 const perkaraService = require('./perkaraService')
+const userService = require('./userService')
 const moment = require('moment')
 
-const {kirimNotification} = require('./notifHelpers/kirimNotif')
+const {kirimNotification, KirimNotifLangsung} = require('./notifHelpers/kirimNotif')
 
 const hitToPenetapan = async (notif_id, perkaraId, otoritas, table, fields, tentang, deskripsi) => {
     const users = await ModelSipp.sequelize.query(`
@@ -497,9 +498,63 @@ exports.notifikasi = async () => {
         }
         if(item.tentang === 'BHT'){
             await hitBHT(item.id, item.perkara_id)
-        }        
+        }
     }
-        await kirimNotification()
+
+    await checkTundaanBelum()
+    await kirimNotification()
+}
+
+const checkTundaanBelum = async () => {
+    const data = await perkaraService.statusSidang()
+        const dataStatusSidang = JSON.parse(data)
+
+        for(const perkara of dataStatusSidang){
+            await inputNotif(perkara)
+        }
+    return true
+}
+
+
+inputNotif = async (data) => {
+    const arrayMajelis = data.majelis_hakim_id.split(',').map(item => Number(item))
+    const arrayPenerimaNotif = [...arrayMajelis, data.panitera_pengganti_id]
+
+    const newArrayObject = await Promise.all(
+        arrayPenerimaNotif.map(async item => {
+            const userData = await userService.getTokenNotif(item)
+            return {
+                user_id : userData.id,
+                perkara_id : data.perkara_id,
+                tentang : `Status Sidang ${data.perkara_id}`,
+                deskripsi : `Peringatan status sidang belum diisi nomor perkara ${data.nomor_perkara}`,
+                token_notif : userData.token_notif
+            }
+        })
+    )
+    const filterArrayObject = newArrayObject.filter(item => item.token_notif !== '')
+
+    filterArrayObject.map(async data => {
+        const cekDataNotif = await ModelNisa.PenerimaNotif.count({ where : {
+            user_id : data.user_id,
+            tentang : data.tentang
+        } })
+
+        if(cekDataNotif === 0){
+            await ModelNisa.PenerimaNotif.create({
+                tanggal : moment().format('YYYY-MM-DD'),
+                notif_id : null,
+                token_notif : data.token_notif,
+                user_id : data.user_id,
+                tentang : data.tentang,
+                deskripsi : data.deskripsi,
+                screen : '-'
+            }).then(async res => {
+                await KirimNotifLangsung(res)
+            })
+        }
+    })
+    return true
 }
 
 

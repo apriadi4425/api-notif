@@ -24,9 +24,16 @@ exports.kirimNotification = async () => {
     
 }
 
+exports.KirimNotifLangsung = async (dataPenerima) => {
+    await kirimKePenerima(dataPenerima)
+    return true
+}
+
 
 const kirimKePenerima = async (dataPenerima) => {
     //kirim notif oneSignal
+
+    console.log(dataPenerima)
 
 
     const headers = {
