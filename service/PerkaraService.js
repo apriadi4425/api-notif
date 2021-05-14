@@ -14,6 +14,30 @@ exports.getDataPerkara = (like) => {
     }})
 }
 
+exports.dataVPerkaraById = (perkaraId) => {
+    return new Promise((resolve, reject) => {
+        ModelSipp.sequelize.query(`
+            select perkara_id, nomor_perkara, jenis_perkara_nama, proses_terakhir_text from v_perkara where perkara_id = ${perkaraId}
+        `).then(result => {
+            resolve(JSON.stringify(result[0], null, 2))
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+exports.dataProsesPerkara = (perkaraId) => {
+    return new Promise((resolve, reject) => {
+        ModelSipp.sequelize.query(`
+            select * from perkara_proses where perkara_id = ${perkaraId}
+        `).then(result => {
+            resolve(JSON.stringify(result[0], null, 2))
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
 exports.getDataPerkaraById = (tableName, fieldName, idUser) => {
     const tahunIni = moment().format('YYYY')
     return new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 const ModelNisa = require('../models/nisa')
 const ModelSipp = require('../models/sipp')
-const perkaraService = require('./PerkaraService')
+const perkaraService = require('./perkaraService')
 const moment = require('moment')
 
 const {kirimNotification} = require('./notifHelpers/kirimNotif')

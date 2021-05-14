@@ -5,17 +5,37 @@ const Controller = () => {
 
     const getMyUser = (req, res) => {
         userService.getUser(req.user.id).then(async result => {
-            const jumlahTotalPerkara = await perkaraService.getDataPerkaraById(result.table_reference, result.otoritas, req.user.userId);
-            res.send({
-                id : result.id,
-                username : result.username,
-                userid : result.user_id,
-                sipp_userid : result.sipp_userid,
-                name : result.name,
-                otoritas : result.otoritas,
-                table : result.table_reference,
-                perkara : JSON.parse(jumlahTotalPerkara)[0]
-            })
+
+            if(req.user.otoritas !== 'pihak'){
+                const jumlahTotalPerkara = await perkaraService.getDataPerkaraById(result.table_reference, result.otoritas, req.user.userId);
+                res.send({
+                    id : result.id,
+                    username : result.username,
+                    userid : result.user_id,
+                    sipp_userid : result.sipp_userid,
+                    name : result.name,
+                    otoritas : result.otoritas,
+                    table : result.table_reference,
+                    perkara : JSON.parse(jumlahTotalPerkara)[0]
+                })
+            }else{
+                const getDataPerkara = await perkaraService.dataVPerkaraById(result.user_id)
+                const getProsesPerkara = await perkaraService.dataProsesPerkara(result.user_id)
+                const dataPerkara = JSON.parse(getDataPerkara)[0]
+                const prosesPerkara = JSON.parse(getProsesPerkara)
+
+                res.send({
+                    id : result.id,
+                    username : result.username,
+                    userid : result.user_id,
+                    name : result.name,
+                    otoritas : result.otoritas,
+                    table : result.table_reference,
+                    proses_terakhir : dataPerkara.proses_terakhir_text,
+                    proses : prosesPerkara
+                })
+            }
+            
         }).catch(err => {
             res.send({
                 message: err,

@@ -16,6 +16,6 @@ app.get('/', (req, res) => {
 })
 app.use('/api', router)
 
-app.listen(8000, () => {
-    console.log('Server Running ON 8000')
+app.listen(8585, () => {
+    console.log('Server Running ON 8585')
 })

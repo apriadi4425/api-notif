@@ -1,14 +1,14 @@
-const PerkaraService = require('../../service/PerkaraService')
+const perkaraService = require('../../service/perkaraService')
 
 const Controller = () => {
     const GetData = (req, res) => {
         const {tgl_sidang, user} = req.query
-        PerkaraService.getJadwalsidang(tgl_sidang)
+        perkaraService.getJadwalsidang(tgl_sidang)
             .then(result => {
                 const NewData = user ? 
                     result.filter(item => item.perkara.panitera.panitera_nama === user)
-                        .map(PerkaraService.refactoryDataPihak) 
-                    : result.map(PerkaraService.refactoryDataPihak)
+                        .map(perkaraService.refactoryDataPihak) 
+                    : result.map(perkaraService.refactoryDataPihak)
                 res.json(NewData)
             })
     }

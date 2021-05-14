@@ -1,4 +1,4 @@
-const PerkaraService = require('../../service/PerkaraService')
+const PerkaraService = require('../../service/perkaraService')
 
 const Controller = () => {
 

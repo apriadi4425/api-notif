@@ -1,19 +1,17 @@
 {
   "sipp": {
-    "username": "apri",
-    "password": "selamanya48",
-    "database": "sipp2",
-    "host": "36.92.93.61",
-    "port" : "3308",
+    "username": "monty",
+    "password": "some_pass",
+    "database": "sipp",
+    "host": "36.92.93.113",
     "dialect": "mariadb",
     "logging" : false
   },
   "nisa": {
-    "username": "apri",
-    "password": "selamanya48",
+    "username": "monty",
+    "password": "some_pass",
     "database": "notif_nisa",
-    "host": "36.92.93.61",
-    "port" : "3308",
+    "host": "36.92.93.113",
     "dialect": "mariadb",
     "logging" : false
   },
