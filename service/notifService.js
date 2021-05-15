@@ -502,23 +502,46 @@ exports.notifikasi = async () => {
     }
 
     await checkTundaanBelum()
+    await checkSidangBesok()
     await kirimNotification()
 }
+
+const checkSidangBesok = async () => {
+    const besok = moment(new Date, 'YYYY-MM-DD').add(3, 'days').format('YYYY-MM-DD')
+    const dataSidang = await perkaraService.getJadwalsidang(besok)
+
+    const arrayDataSidang = dataSidang.map(item => {
+
+        const arrayMajelisHakimId = item.perkara.majelis_hakim_id.split(',').map(item => Number(item))
+        const arrayPenerimaNotif = [...arrayMajelisHakimId, item.perkara.panitera.panitera_id, item.perkara.jurusita.jurusita_id]
+        return {
+            perkara_id : item.perkara_id,
+            nomor_perkara : item.perkara.nomor_perkara,
+            penerima_notif : arrayPenerimaNotif
+        }
+    })
+
+    for(const perkara of arrayDataSidang){
+        await inputNotif(perkara, perkara.penerima_notif, 'Sidang Besok')
+    }
+    return true
+}
+
 
 const checkTundaanBelum = async () => {
     const data = await perkaraService.statusSidang()
         const dataStatusSidang = JSON.parse(data)
 
         for(const perkara of dataStatusSidang){
-            await inputNotif(perkara)
+            const arrayMajelis = perkara.majelis_hakim_id.split(',').map(item => Number(item))
+            const arrayPenerimaNotif = [...arrayMajelis, perkara.panitera_pengganti_id]
+            await inputNotif(perkara, arrayPenerimaNotif, 'Status Sidang')
         }
     return true
 }
 
 
-inputNotif = async (data) => {
-    const arrayMajelis = data.majelis_hakim_id.split(',').map(item => Number(item))
-    const arrayPenerimaNotif = [...arrayMajelis, data.panitera_pengganti_id]
+const inputNotif = async (data, arrayPenerimaNotif, tentang) => {
 
     const newArrayObject = await Promise.all(
         arrayPenerimaNotif.map(async item => {
@@ -526,7 +549,7 @@ inputNotif = async (data) => {
             return {
                 user_id : userData.id,
                 perkara_id : data.perkara_id,
-                tentang : `Status Sidang ${data.perkara_id}`,
+                tentang : `${tentang} ${data.perkara_id}`,
                 deskripsi : `Peringatan status sidang belum diisi nomor perkara ${data.nomor_perkara}`,
                 token_notif : userData.token_notif
             }

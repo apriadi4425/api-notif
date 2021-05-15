@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     jenis_perkara_nama : DataTypes.STRING,
     alur_perkara_nama : DataTypes.STRING,
     majelis_hakim_kode : DataTypes.STRING,
+    majelis_hakim_id : DataTypes.STRING,
     pihak1_text: DataTypes.STRING,
     pihak2_text: DataTypes.STRING,
   }, {

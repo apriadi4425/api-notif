@@ -33,8 +33,6 @@ exports.KirimNotifLangsung = async (dataPenerima) => {
 const kirimKePenerima = async (dataPenerima) => {
     //kirim notif oneSignal
 
-    console.log(dataPenerima)
-
 
     const headers = {
         "Content-Type": "application/json; charset=utf-8",

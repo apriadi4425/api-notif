@@ -16,11 +16,12 @@ const Controller = () => {
     const getStatusSidang = async (req, res) => {
         const data = await PerkaraService.statusSidang()
         const dataStatusSidang = JSON.parse(data)
-
-        for(const perkara of dataStatusSidang){
-            await notifService.inputNotif(perkara)
-        }
         res.send(dataStatusSidang)
+    }
+
+    const checkSidang = async (req, res) => {
+        const dataSidang = await notifService.checkSidangBesok()
+        res.send(dataSidang)
     }
 
     const getJumlahPerkaraTiapBulan = async (req, res) => {
@@ -31,7 +32,7 @@ const Controller = () => {
         res.send(objectToArray.filter(number => number > 1))
     }
 
-    return { getJumlahData, getJumlahPerkaraTiapBulan, getStatusSidang }
+    return { getJumlahData, getJumlahPerkaraTiapBulan, getStatusSidang, checkSidang }
 }
 
 module.exports = Controller

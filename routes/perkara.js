@@ -13,6 +13,9 @@ router.route('/get-chart')
 
 router.route('/status-sidang')
     .get(Controller.getStatusSidang)
+
+router.route('/cek-sidang-besok')
+    .get(Controller.checkSidang)
     
 
 module.exports = router
