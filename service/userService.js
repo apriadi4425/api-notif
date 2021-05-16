@@ -31,6 +31,26 @@ exports.userValidate = ({username, password}) => {
     })
 }
 
+exports.getUserPihakByNik = ({username, password}) => {
+    const dataError = {
+        status : 'error',
+        message : 'username atau password salah'
+    }
+    return new Promise(async (resolve, reject) => {
+        if(username !== '' && password === '123456'){
+            ModelSipp.sequelize.query(`
+                SELECT a.id, a.nomor_indentitas, b.perkara_id, b.nomor_perkara FROM v_pihak a
+                LEFT JOIN v_pihak_perkara b ON a.id = b.pihak_id
+                WHERE a.nomor_indentitas = '${username}'
+            `).then(res => {
+                resolve(JSON.stringify(res[0], null, 2))
+            })
+        }else{
+            reject(dataError)
+        }
+    })
+}
+
 exports.getUser = (id) => {
     return new Promise((resolve, reject) => {
         ModelNissa.User.findOne({where : { id }}).then((res) => {

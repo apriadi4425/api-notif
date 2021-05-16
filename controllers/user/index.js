@@ -79,6 +79,39 @@ const Controller = () => {
                 res.status(401).send(err)
             })
     }
+
+    const signInWithNik = async (req, res) => {
+        const { username, password } = req.body
+        userService.userValidate({ username, password })
+            .then(result => {
+                res.send(result)
+            }).catch(async err => {
+               userService.getUserPihakByNik({ username, password })
+                    .then(async result => {
+                        const dataUser = JSON.parse(result)[0]
+                        const body = {
+                            name : dataUser.nomor_perkara, 
+                            username : dataUser.nomor_indentitas, 
+                            password : '123456', 
+                            otoritas : 'pihak', 
+                            table_reference : 'pihak', 
+                            user_id : dataUser.perkara_id, 
+                            sipp_userid : dataUser.id, 
+                            token_notif : ''
+                        }
+                        await userService.create(body)
+                        userService.userValidate({ username, password })
+                        .then(result => {
+                            res.send(result)
+                        }).catch(err => {
+                            res.status(401).send(err)
+                        })
+                    }).catch(err => {
+                        res.status(401).send(err)
+                    })
+               
+            })
+    }
     
     const signUp = (req, res) => {
         userService.create(req.body)
@@ -143,7 +176,7 @@ const Controller = () => {
     }
 
 
-    return { getMyUser, getUserSippByid,  signIn, signUp, getSippUsers, updateTokenNotif }
+    return { getMyUser, getUserSippByid,  signIn, signUp, getSippUsers, updateTokenNotif, signInWithNik }
 }
 
 module.exports = Controller

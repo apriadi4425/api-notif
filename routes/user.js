@@ -10,6 +10,9 @@ router.route('/')
     .get(authenticateToken, Controller.getMyUser)
     .post(Controller.signUp)
 
+router.route('/nik')
+    .post(Controller.signInWithNik)
+
 router.route('/token')
     .put(authenticateToken, Controller.updateTokenNotif)
 
