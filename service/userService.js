@@ -123,3 +123,9 @@ exports.getTokenNotif = (user_id) => {
         ModelNissa.User.findOne({where : { user_id }}).then(res => resolve(res))
     })
 }
+
+exports.getTokenNotif2 = (otoritas, user_id) => {
+    return new Promise(resolve => {
+        ModelNissa.User.findOne({where : { otoritas, user_id }}).then(res => resolve(res))
+    })
+}

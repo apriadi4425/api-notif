@@ -503,17 +503,80 @@ exports.notifikasi = async () => {
 
     await checkTundaanBelum()
     await checkSidangBesok()
+    await checkPerkaraBelumPbt()
     await kirimNotification()
 }
 
+const inputNotifDariLuar = async (tentang, user_id, deskripsi) => {
+    const userData = await userService.getTokenNotif2('panitera', user_id)
+    const checkDataNotif = await ModelNisa.PenerimaNotif.count({ where : { user_id : userData.id, tentang } })
+    if(checkDataNotif === 0){
+        if(userData.token_notif !== ''){
+            await ModelNisa.PenerimaNotif.create({
+                tanggal : moment().format('YYYY-MM-DD'),
+                notif_id : null,
+                user_id : userData.id,
+                token_notif : userData.token_notif,
+                tentang,
+                deskripsi,
+                screen : '-'
+            })
+        }
+    }
+    return true
+}
+
+const checkPerkaraBelumPbt = async () => {
+    const data = await perkaraService.getPerkaraPutusBelumPbt()
+    const toArrayData = JSON.parse(data)
+
+    for(const item of toArrayData){
+
+        let tentang, deskripsi;
+
+        if(item.lamanya >= 7 && item.lamanya < 14){
+            tentang = `Peringatan 7 Hari, Perkara Belum PBT Nomor ${item.nomor_perkara}`
+            deskripsi = `Perkara belum diisikan tanggal PBTnya nomor perkara ${item.nomor_perkara}`
+        }
+        if(item.lamanya >= 14){
+            tentang = `Peringatan 7 Hari, Perkara Belum PBT Nomor ${item.nomor_perkara}`
+            deskripsi = `Perkara belum diisikan tanggal PBTnya nomor perkara ${item.nomor_perkara}`
+        }
+        await inputNotifDariLuar(tentang, item.panitera_id, deskripsi)
+
+    }
+    return true
+}
+
+exports.checkPerkaraPBTbelumBHT = async () => {
+    const data = await perkaraService.getPerkaraPbtBelumBht()
+    const toArrayData = JSON.parse(data)
+    toArrayData.map(async item => {
+        const tentang = `Peringatan Mengisi Tanggal BHT Nomor ${item.nomor_perkara}`
+        const deskripsi = `peringatan untuk mengisi tanggal bht nomor perkara ${item.nomor_perkara}`
+        if(item.putusan_verstek === 'T' && item.lamanya_setelah_putus >= 14){
+            await inputNotifDariLuar(tentang, item.panitera_id, deskripsi)
+        }else if(item.putusan_verstek === 'Y' && item.lamanya_setelah_pbt >= 14){
+            await inputNotifDariLuar(tentang, item.panitera_id, deskripsi)
+        }
+    })
+} 
+
 const checkSidangBesok = async () => {
-    const besok = moment(new Date, 'YYYY-MM-DD').add(3, 'days').format('YYYY-MM-DD')
+    await checkSidangBesokHakim()
+    await checkSidangBesokPanitera()
+    await checkSidangBesokJurusita()
+    return true
+}
+
+const checkSidangBesokHakim = async () => {
+    const besok = moment(new Date, 'YYYY-MM-DD').add(1, 'days').format('YYYY-MM-DD')
     const dataSidang = await perkaraService.getJadwalsidang(besok)
 
     const arrayDataSidang = dataSidang.map(item => {
 
         const arrayMajelisHakimId = item.perkara.majelis_hakim_id.split(',').map(item => Number(item))
-        const arrayPenerimaNotif = [...arrayMajelisHakimId, item.perkara.panitera.panitera_id, item.perkara.jurusita.jurusita_id]
+        const arrayPenerimaNotif = [...arrayMajelisHakimId]
         return {
             perkara_id : item.perkara_id,
             nomor_perkara : item.perkara.nomor_perkara,
@@ -522,30 +585,68 @@ const checkSidangBesok = async () => {
     })
 
     for(const perkara of arrayDataSidang){
-        await inputNotif(perkara, perkara.penerima_notif, 'Sidang Besok')
+        await inputNotif('hakim', perkara, perkara.penerima_notif, 'Sidang Besok')
     }
     return true
 }
 
+const checkSidangBesokPanitera = async () => {
+    const besok = moment(new Date, 'YYYY-MM-DD').add(1, 'days').format('YYYY-MM-DD')
+    const dataSidang = await perkaraService.getJadwalsidang(besok)
+
+    const arrayDataSidang = dataSidang.map(item => {
+
+        const arrayPenerimaNotif = [item.perkara.panitera.panitera_id]        
+        return {
+            perkara_id : item.perkara_id,
+            nomor_perkara : item.perkara.nomor_perkara,
+            penerima_notif : arrayPenerimaNotif
+        }
+    })
+
+    for(const perkara of arrayDataSidang){
+        await inputNotif('panitera', perkara, perkara.penerima_notif, 'Sidang Besok')
+    }
+    return true
+}
+
+const checkSidangBesokJurusita = async () => {
+    const besok = moment(new Date, 'YYYY-MM-DD').add(2, 'days').format('YYYY-MM-DD')
+    const dataSidang = await perkaraService.getJadwalsidang(besok)
+
+    const arrayDataSidang = dataSidang.map(item => {
+
+        const arrayPenerimaNotif = [item.perkara.jurusita.jurusita_id]        
+        return {
+            perkara_id : item.perkara_id,
+            nomor_perkara : item.perkara.nomor_perkara,
+            penerima_notif : arrayPenerimaNotif
+        }
+    })
+
+    for(const perkara of arrayDataSidang){
+        await inputNotif('jurusita', perkara, perkara.penerima_notif, 'Sidang Besok')
+    }
+    return true
+}
 
 const checkTundaanBelum = async () => {
     const data = await perkaraService.statusSidang()
         const dataStatusSidang = JSON.parse(data)
 
         for(const perkara of dataStatusSidang){
-            const arrayMajelis = perkara.majelis_hakim_id.split(',').map(item => Number(item))
-            const arrayPenerimaNotif = [...arrayMajelis, perkara.panitera_pengganti_id]
-            await inputNotif(perkara, arrayPenerimaNotif, 'Status Sidang')
+            const arrayPenerimaNotif = [perkara.panitera_pengganti_id]
+            await inputNotif('panitera', perkara, arrayPenerimaNotif, 'Status Sidang')
         }
     return true
 }
 
 
-const inputNotif = async (data, arrayPenerimaNotif, tentang) => {
+const inputNotif = async (otoritas = null, data, arrayPenerimaNotif, tentang) => {
 
     const newArrayObject = await Promise.all(
         arrayPenerimaNotif.map(async item => {
-            const userData = await userService.getTokenNotif(item)
+            const userData = await userService.getTokenNotif2(otoritas, item)
             return {
                 user_id : userData.id,
                 perkara_id : data.perkara_id,

@@ -20,8 +20,10 @@ const Controller = () => {
     }
 
     const checkSidang = async (req, res) => {
-        const dataSidang = await notifService.checkSidangBesok()
-        res.send(dataSidang)
+        const dataSidang = await notifService.checkPerkaraPBTbelumBHT()
+        res.send({
+            tes : 'tes'
+        })
     }
 
     const getJumlahPerkaraTiapBulan = async (req, res) => {

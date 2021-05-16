@@ -1,5 +1,4 @@
 const ModelSipp = require('../models/sipp')
-const ModelNissa = require('../models/nisa')
 const moment = require('moment')
 const {Op} = require('sequelize')
 
@@ -128,6 +127,54 @@ exports.getJadwalsidang = (tanggal_sidang) => {
         })
         .then(result => {
             resolve(result)
+        })
+    })
+}
+
+exports.getPerkaraPutusBelumPbt = () => {
+    return new Promise((resolve, reject) => {
+        ModelSipp.sequelize.query(`
+        SELECT DATEDIFF("${moment().format('YYYY-MM-DD')}", c.tanggal_putusan) AS lamanya, a.nomor_perkara, d.id AS panitera_id, c.tanggal_putusan
+        FROM v_perkara a 
+        LEFT JOIN perkara_putusan_pemberitahuan_putusan b ON a.perkara_id = b.perkara_id
+        LEFT JOIN perkara_putusan c ON a.perkara_id = c.perkara_id
+        LEFT JOIN panitera_pn d ON a.panitera_pengganti_id = d.id
+        LEFT JOIN delegasi_keluar e ON e.perkara_id = a.perkara_id
+        WHERE c.tanggal_putusan LIKE '%${moment().format('YYYY')}%'
+        AND c.status_putusan_id = 62
+        AND b.tanggal_pemberitahuan_putusan IS NULL
+        AND b.pihak = 2
+        AND a.jenis_perkara_id != 360
+        AND a.nomor_perkara LIKE '%Pdt.G%'
+        AND c.status_putusan_id NOT IN ('67','7','63','65','93','66','64')
+        AND e.perkara_id IS NULL
+        GROUP BY b.perkara_id
+        HAVING lamanya >= 7
+        `).then(res => {
+            resolve(JSON.stringify(res[0], null, 2))
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+exports.getPerkaraPbtBelumBht = () => {
+    return new Promise((resolve, reject) => {
+        ModelSipp.sequelize.query(`
+        SELECT a.perkara_id, a.nomor_perkara, a.putusan_verstek, a.tanggal_putusan, b.tanggal_pemberitahuan_putusan, c.id AS panitera_id,
+        DATEDIFF("${moment().format('YYYY-MM-DD')}", b.tanggal_pemberitahuan_putusan) AS lamanya_setelah_pbt, 
+        DATEDIFF("${moment().format('YYYY-MM-DD')}", a.tanggal_putusan) AS lamanya_setelah_putus
+        FROM v_perkara a
+        LEFT JOIN perkara_putusan_pemberitahuan_putusan b ON a.perkara_id = b.perkara_id
+        LEFT JOIN panitera_pn c ON a.panitera_pengganti_id = c.id
+        WHERE b.pihak = 2
+        AND a.status_putusan_id = 62
+        AND a.tanggal_bht IS NULL
+        AND a.tanggal_putusan LIKE '%${moment().format('YYYY')}%'
+        `).then(res => {
+            resolve(JSON.stringify(res[0], null, 2))
+        }).catch(err => {
+            reject(err)
         })
     })
 }
