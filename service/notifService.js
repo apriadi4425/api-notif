@@ -60,7 +60,7 @@ const perintahTojurusita = async (data, notif_id, action) => {
     }
 }
 
-const sidangToPihak = async (data, notif_id) => {
+const sidangToPihak = async (data, notif_id, action) => {
     const userNisa = await ModelNisa.User.findOne({where : { otoritas : 'pihak', user_id : data.perkara_id }})
     if(userNisa && userNisa.token_notif !== ''){
         const checkPenerimaNotif = await ModelNisa.PenerimaNotif.count({
